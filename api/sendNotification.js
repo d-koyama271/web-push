@@ -1,7 +1,5 @@
 import webpush from 'web-push';
 
-const config = useRuntimeConfig()
-
 webpush.setVapidDetails(
   'mailto:test@example.com',
   process.env.NUXT_VAPID_PUBLIC_KEY,
