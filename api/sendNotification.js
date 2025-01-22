@@ -1,15 +1,12 @@
 import webpush from 'web-push';
+import { useRuntimeConfig } from '#app'
 
-// 環境変数からVAPIDキーを取得
-const vapidKeys = {
-  publicKey: process.env.NUXT_VAPID_PUBLIC_KEY,
-  privateKey: process.env.NUXT_VAPID_PRIVATE_KEY,
-};
+const config = useRuntimeConfig()
 
 webpush.setVapidDetails(
   'mailto:test@example.com',
-  vapidKeys.publicKey,
-  vapidKeys.privateKey
+  config.public.vapidPublicKey,
+  config.vapidPrivateKey
 );
 
 let subscriptions = [];

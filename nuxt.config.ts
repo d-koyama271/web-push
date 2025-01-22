@@ -46,6 +46,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    vapidPrivateKey: process.env.NUXT_VAPID_PRIVATE_KEY,
     public: {
       vapidPublicKey: process.env.NUXT_VAPID_PUBLIC_KEY,
       backendUrl: process.env.NUXT_BACKEND_URL,
