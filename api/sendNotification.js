@@ -1,5 +1,4 @@
 import webpush from 'web-push';
-import { useRuntimeConfig } from '#app'
 
 const config = useRuntimeConfig()
 
