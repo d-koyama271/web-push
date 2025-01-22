@@ -2,10 +2,8 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
-  app: {
-    baseURL: "/web-push/",
-  },
   app:{
+    baseURL: "/web-push/",
     head: {
       htmlAttrs:{
         lang: 'ja'
@@ -23,7 +21,7 @@ export default defineNuxtConfig({
   pwa: {
     registerType: "autoUpdate",
     manifest: {
-      name: "Web Notification Demo",
+      name: "通知デモ",
       short_name: "NotifDemo",
       description: "Web通知のデモサイト",
       lang: "ja",
@@ -43,6 +41,14 @@ export default defineNuxtConfig({
         },
       ],
     },
-    workbox: {},
+    strategies: 'injectManifest',
+    srcDir: 'plugins/pwa/'
+  },
+
+  runtimeConfig: {
+    public: {
+      vapidPublicKey: process.env.NUXT_VAPID_PUBLIC_KEY,
+      backendUrl: process.env.NUXT_BACKEND_URL,
+    },
   },
 });

@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "deploy": "nuxt generate && gh-pages -d .output/public"
+    "deploy": "nuxt generate && gh-pages -d .output/public --dotfiles"
   },
   "homepage": "https://d-koyama271.github.io/web-push/",
   "dependencies": {
