@@ -4,8 +4,8 @@ const config = useRuntimeConfig()
 
 webpush.setVapidDetails(
   'mailto:test@example.com',
-  config.public.vapidPublicKey,
-  config.vapidPrivateKey
+  process.env.NUXT_VAPID_PUBLIC_KEY,
+  process.env.NUXT_VAPID_PRIVATE_KEY
 );
 
 let subscriptions = [];
