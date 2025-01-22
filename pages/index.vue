@@ -1,51 +1,92 @@
 <template>
-    <div class="container">
-      <h1>Web通知デモ</h1>
-      <button @click="requestNotificationPermission">通知を許可</button>
-      <button @click="sendNotification">通知を送信</button>
-    </div>
-  </template>
+  <div class="container">
+    <h1>Web Push Demo</h1>
+    <button @click="subscribe">通知を購読</button>
+    <button @click="triggerNotification">通知を表示</button>
+  </div>
+</template>
 
-  <script setup>
-  import { useRuntimeConfig } from '#imports';
+<script setup>
+import { useRuntimeConfig } from '#app'
 
-  const config = useRuntimeConfig();
+const config = useRuntimeConfig()
 
-  const requestNotificationPermission = async () => {
-    if (!('Notification' in window)) {
-      alert('このブラウザは通知に対応していません。');
-      return;
-    }
-
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      alert('通知が許可されました。');
-    } else {
-      alert('通知が拒否されました。');
-    }
-  };
-
-  const sendNotification = () => {
-    if (Notification.permission === 'granted') {
-      const iconUrl = `icons/icon-192x192.png`; // ベースURLを考慮
-      new Notification('こんにちは！これはテスト通知です。', {
-        body: 'これはデモの通知メッセージです。',
-        icon: iconUrl,
-      });
-    } else {
-      alert('通知の許可が必要です。');
-    }
-  };
-  </script>
-
-  <style scoped>
-  .container {
-    text-align: center;
-    margin-top: 50px;
+const subscribe = async () => {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    alert('このブラウザはPush通知に対応していません。')
+    return
   }
-  button {
-    margin: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
+
+  try {
+    const registration = await navigator.serviceWorker.ready
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(config.public.vapidPublicKey)
+    })
+    console.log('Push Subscription:', subscription)
+
+    // サブスクリプション情報をサーバーに送信
+    await fetch(`${config.public.backendUrl}/subscribe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(subscription)
+    })
+
+    alert('通知を購読しました。')
+  } catch (error) {
+    console.error('Subscription failed:', error)
+    alert('通知の購読に失敗しました。')
   }
-  </style>
+}
+
+const triggerNotification = async () => {
+  if (!('serviceWorker' in navigator)) {
+    alert('このブラウザはService Workerに対応していません。')
+    return
+  }
+
+  const registration = await navigator.serviceWorker.ready
+  registration.active?.postMessage({
+    type: 'SHOW_NOTIFICATION',
+    payload: {
+      title: 'こんにちは！',
+      options: {
+        body: 'これはテスト通知です。',
+        icon: 'icons/icon-192x192.png',
+        badge: 'icons/icon-192x192.png',
+      },
+    },
+  })
+}
+
+// Utility function to convert Base64 to Uint8Array
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4)
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/')
+
+  const rawData = atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
+}
+</script>
+
+<style scoped>
+.container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+</style>
