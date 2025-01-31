@@ -1,9 +1,7 @@
+import { Redis } from '@upstash/redis';
 import webpush from 'web-push';
-import Redis from 'ioredis';
 
-const redis = new Redis(process.env.VERCEL_KV_URL, {
-  password: process.env.VERCEL_KV_TOKEN,
-});
+const redis = Redis.fromEnv();
 
 const vapidKeys = {
   publicKey: process.env.NUXT_VAPID_PUBLIC_KEY,
@@ -39,13 +37,12 @@ export default async function handler(req, res) {
         return;
       }
 
-      const sendNotifications = subscriptions.map(sub =>
-        webpush.sendNotification(JSON.parse(sub), payload).catch(error => {
-          console.error('Error sending notification to', JSON.parse(sub).endpoint, error);
-          // 必要に応じて、無効なサブスクリプションを削除
-          // redis.lrem('subscriptions', 0, sub);
-        })
-      );
+      const sendNotifications = subscriptions.map((sub) => {
+        const subscription = JSON.parse(sub);
+        return webpush.sendNotification(subscription, payload).catch((error) => {
+          console.error('Error sending notification to:', subscription.endpoint, error);
+        });
+      });
 
       await Promise.all(sendNotifications);
       res.status(200).json({ message: 'Notifications sent successfully' });

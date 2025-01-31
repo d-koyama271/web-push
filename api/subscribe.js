@@ -1,8 +1,7 @@
-import Redis from 'ioredis';
+import { Redis } from "@upstash/redis";
 
-const redis = new Redis(process.env.VERCEL_KV_URL, {
-  password: process.env.VERCEL_KV_TOKEN,
-});
+// Initialize Redis
+const redis = Redis.fromEnv();
 
 export default async function handler(req, res) {
   // CORSヘッダーの設定
@@ -15,26 +14,22 @@ export default async function handler(req, res) {
     return;
   }
 
-  if (req.method === 'POST') {
-    const subscription = req.body;
-    try {
-      // await redis.lpush('subscriptions', JSON.stringify(subscription));
+  try {
+    if (req.method === 'POST') {
+      // サブスクリプションをリストに追加
+      await redis.lpush('subscriptions', JSON.stringify(req.body));
       res.status(201).json({ message: 'Subscribed successfully' });
-    } catch (error) {
-      console.error('Error saving subscription:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  } else if (req.method === 'GET') {
-    try {
+    } else if (req.method === 'GET') {
+      // リストの全要素を取得
       const subscriptions = await redis.lrange('subscriptions', 0, -1);
-      const parsedSubscriptions = subscriptions.map(sub => JSON.parse(sub));
-      res.status(200).json(parsedSubscriptions);
-    } catch (error) {
-      console.error('Error fetching subscriptions:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      const parsed = subscriptions.map((sub) => JSON.parse(sub));
+      res.status(200).json(parsed);
+    } else {
+      res.setHeader('Allow', ['POST', 'GET']);
+      res.status(405).end(`Method ${req.method} Not Allowed`);
     }
-  } else {
-    res.setHeader('Allow', ['POST', 'GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
