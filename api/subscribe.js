@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const subscription = req.body;
     try {
-      await redis.lpush('subscriptions', JSON.stringify(subscription));
+      // await redis.lpush('subscriptions', JSON.stringify(subscription));
       res.status(201).json({ message: 'Subscribed successfully' });
     } catch (error) {
       console.error('Error saving subscription:', error);
