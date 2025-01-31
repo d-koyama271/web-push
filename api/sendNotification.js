@@ -40,9 +40,9 @@ export default async function handler(req, res) {
       console.log(subscriptions)
 
       const sendNotifications = subscriptions.map((sub) => {
-        const subscription = JSON.parse(sub);
-        return webpush.sendNotification(subscription, payload).catch((error) => {
-          console.error('Error sending notification to:', subscription.endpoint, error);
+        // const subscription = JSON.parse(sub);
+        return webpush.sendNotification(sub, payload).catch((error) => {
+          console.error('Error sending notification to:', sub.endpoint, error);
         });
       });
 
