@@ -26,7 +26,7 @@ const subscribe = async () => {
     console.log('Push Subscription:', subscription)
 
     // サブスクリプション情報をサーバーに送信
-    await fetch(`${config.public.backendUrl}/subscribe`, {
+    await fetch(`${config.public.backendUrl}/api/subscribe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -41,24 +41,26 @@ const subscribe = async () => {
   }
 }
 
-const triggerNotification = async () => {
-  if (!('serviceWorker' in navigator)) {
-    alert('このブラウザはService Workerに対応していません。')
-    return
-  }
-
-  const registration = await navigator.serviceWorker.ready
-  registration.active?.postMessage({
-    type: 'SHOW_NOTIFICATION',
-    payload: {
-      title: 'こんにちは！',
-      options: {
+const sendTestNotification = async () => {
+  try {
+    await fetch(`${config.public.backendUrl}/api/sendNotification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title: 'テスト通知',
         body: 'これはテスト通知です。',
         icon: 'icons/icon-192x192.png',
         badge: 'icons/icon-192x192.png',
-      },
-    },
-  })
+      })
+    })
+
+    alert('通知を送信しました。')
+  } catch (error) {
+    console.error('Error sending notification:', error)
+    alert('通知の送信に失敗しました。')
+  }
 }
 
 // Utility function to convert Base64 to Uint8Array

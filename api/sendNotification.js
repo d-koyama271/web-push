@@ -1,12 +1,20 @@
 import webpush from 'web-push';
+import Redis from 'ioredis';
+
+const redis = new Redis(process.env.VERCEL_KV_URL, {
+  password: process.env.VERCEL_KV_TOKEN,
+});
+
+const vapidKeys = {
+  publicKey: process.env.NUXT_VAPID_PUBLIC_KEY,
+  privateKey: process.env.NUXT_VAPID_PRIVATE_KEY,
+};
 
 webpush.setVapidDetails(
-  'mailto:test@example.com',
-  process.env.NUXT_VAPID_PUBLIC_KEY,
-  process.env.NUXT_VAPID_PRIVATE_KEY
+  'mailto:your-email@example.com', // 実際のメールアドレスに置き換えてください
+  vapidKeys.publicKey,
+  vapidKeys.privateKey
 );
-
-let subscriptions = [];
 
 export default async function handler(req, res) {
   // CORSヘッダーの設定
@@ -15,7 +23,6 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    // プリフライトリクエストに対するレスポンス
     res.status(200).end();
     return;
   }
@@ -24,9 +31,22 @@ export default async function handler(req, res) {
     const { title, body, icon, badge } = req.body;
     const payload = JSON.stringify({ title, body, icon, badge });
 
-    const sendNotifications = subscriptions.map(sub => webpush.sendNotification(sub, payload));
-
     try {
+      const subscriptions = await redis.lrange('subscriptions', 0, -1);
+
+      if (subscriptions.length === 0) {
+        res.status(400).json({ error: 'No subscriptions available' });
+        return;
+      }
+
+      const sendNotifications = subscriptions.map(sub =>
+        webpush.sendNotification(JSON.parse(sub), payload).catch(error => {
+          console.error('Error sending notification to', JSON.parse(sub).endpoint, error);
+          // 必要に応じて、無効なサブスクリプションを削除
+          // redis.lrem('subscriptions', 0, sub);
+        })
+      );
+
       await Promise.all(sendNotifications);
       res.status(200).json({ message: 'Notifications sent successfully' });
     } catch (error) {
