@@ -37,6 +37,8 @@ export default async function handler(req, res) {
         return;
       }
 
+      console.log(subscriptions)
+
       const sendNotifications = subscriptions.map((sub) => {
         const subscription = JSON.parse(sub);
         return webpush.sendNotification(subscription, payload).catch((error) => {
