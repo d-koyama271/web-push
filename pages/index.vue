@@ -26,7 +26,7 @@ const subscribe = async () => {
     console.log('Push Subscription:', subscription)
 
     // サブスクリプション情報をサーバーに送信
-    await fetch(`${config.public.backendUrl}/api/subscribe`, {
+    await fetch(`${config.public.backendUrl}/subscribe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -43,7 +43,7 @@ const subscribe = async () => {
 
 const sendTestNotification = async () => {
   try {
-    await fetch(`${config.public.backendUrl}/api/sendNotification`, {
+    await fetch(`${config.public.backendUrl}/sendNotification`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
