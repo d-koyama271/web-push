@@ -1,21 +1,20 @@
 import { precacheAndRoute } from 'workbox-precaching'
 
-// ビルド時に生成されたアセットをプリキャッシュ
 precacheAndRoute(self.__WB_MANIFEST || [])
 
-// クライアントからのメッセージを受信して通知を表示
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
-    const { title, options } = event.data.payload
-    self.registration.showNotification(title, options)
+// サーバーサイドPushを受け取る
+self.addEventListener('push', (event) => {
+  let data = {};
+  if (event.data) {
+    data = event.data.json();
   }
-})
-
-// 通知クリック時の動作
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close()
-  // 通知クリック時に特定のURLを開く
+  const title = data.title || 'Default Title';
+  const options = {
+    body: data.body || 'Default Body',
+    icon: data.icon || 'icons/icon-192x192.png',
+    badge: data.badge || 'icons/icon-192x192.png',
+  };
   event.waitUntil(
-    clients.openWindow('https://d-koyama271.github.io/web-push/')
-  )
-})
+    self.registration.showNotification(title, options)
+  );
+});

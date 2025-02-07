@@ -16,7 +16,6 @@ webpush.setVapidDetails(
 
 export default async function handler(req, res) {
   // CORSヘッダーの設定
-  res.setHeader('Access-Control-Allow-Origin', 'https://d-koyama271.github.io');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -38,8 +37,6 @@ export default async function handler(req, res) {
       }
 
       const sendNotifications = subscriptions.map((sub) => {
-        // const subscription = JSON.parse(sub);
-        console.log(typeof sub)
         return webpush.sendNotification(sub, payload).catch((error) => {
           console.error('Error sending notification to:', sub.endpoint, error);
         });

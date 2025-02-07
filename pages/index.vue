@@ -2,7 +2,7 @@
   <div class="container">
     <h1>Web Push Demo</h1>
     <button @click="subscribe">通知を購読</button>
-    <button @click="triggerNotification">通知を表示</button>
+    <button @click="sendTestNotification">通知を表示</button>
   </div>
 </template>
 

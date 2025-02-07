@@ -5,7 +5,6 @@ const redis = Redis.fromEnv();
 
 export default async function handler(req, res) {
   // CORSヘッダーの設定
-  res.setHeader('Access-Control-Allow-Origin', 'https://d-koyama271.github.io');
   res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 

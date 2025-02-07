@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare",
     "deploy": "nuxt generate && gh-pages -d .output/public --dotfiles"
   },
-  "homepage": "https://d-koyama271.github.io/web-push/",
+  "homepage": "https://web-push-lake.vercel.app/",
   "dependencies": {
     "@upstash/redis": "^1.34.3",
     "@vite-pwa/nuxt": "^0.10.6",
