@@ -1,18 +1,22 @@
 <template>
   <div class="container">
     <h1>Web Push Demo</h1>
-    <button @click="subscribe">通知を購読</button>
-    <div>
+
+    <div class="subscribe-group">
+      <button @click="subscribe">通知を購読</button>
+    </div>
+
+    <div class="form-group">
       <label for="title">タイトル:</label>
       <input id="title" v-model="title" type="text" placeholder="通知タイトル" />
     </div>
 
-    <div>
+    <div class="form-group">
       <label for="body">本文:</label>
       <input id="body" v-model="body" type="text" placeholder="通知本文" />
     </div>
 
-    <div>
+    <div class="form-group">
       <label for="icon">アイコン:</label>
       <select id="icon" v-model="icon">
         <option disabled value="">--- 選択してください ---</option>
@@ -22,7 +26,12 @@
       </select>
     </div>
 
-    <button @click="sendNotification">通知を送信</button>
+    <div class="form-group button-row">
+      <label>&nbsp;</label>
+      <div class="right-align">
+        <button @click="sendNotification">通知を送信</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -108,15 +117,43 @@ function urlBase64ToUint8Array(base64String) {
   margin: 0 auto;
   padding: 1rem;
 }
-label {
-  display: inline-block;
-  width: 60px;
-  margin-right: 8px;
-}
-input, select {
-  width: 80%;
+
+h1 {
+  text-align: center;
   margin-bottom: 1rem;
 }
+
+.subscribe-group {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  width: 80px;
+  margin-right: 8px;
+  text-align: right;
+}
+
+.form-group input,
+.form-group select {
+  flex: 1;
+  height: 36px;
+  line-height: 36px;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.button-row .right-align {
+  flex: 1;
+  text-align: right;
+}
+
 button {
   display: inline-block;
   padding: 8px 16px;
