@@ -46,18 +46,24 @@ const icon = ref('')
 const config = useRuntimeConfig()
 
 const subscribe = async () => {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    alert('このブラウザはPush通知に対応していません。')
-    return
-  }
+  // if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+  //   alert('このブラウザはPush通知に対応していません。')
+  //   return
+  // }
 
   try {
     const registration = await navigator.serviceWorker.ready
+
+    const existing = await registration.pushManager.getSubscription()
+    if (existing) {
+      alert('すでに購読済みです。')
+      return
+    }
+
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(config.public.vapidPublicKey)
     })
-    console.log('Push Subscription:', subscription)
 
     // サブスクリプション情報をサーバーに送信
     await fetch(`${config.public.backendUrl}/subscribe`, {
