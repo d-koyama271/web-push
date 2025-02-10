@@ -1,5 +1,5 @@
-import { Redis } from '@upstash/redis';
-import webpush from 'web-push';
+import { Redis } from "@upstash/redis";
+import webpush from "web-push";
 
 const redis = Redis.fromEnv();
 
@@ -9,47 +9,51 @@ const vapidKeys = {
 };
 
 webpush.setVapidDetails(
-  'mailto:your-email@example.com', // 実際のメールアドレスに置き換えてください
+  "mailto:example@example.com",
   vapidKeys.publicKey,
   vapidKeys.privateKey
 );
 
 export default async function handler(req, res) {
   // CORSヘッダーの設定
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // res.setHeader('Access-Control-Allow-Origin', 'https://d-koyama271.github.io')
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     res.status(200).end();
     return;
   }
 
-  if (req.method === 'POST') {
-    const { title, body, icon, badge } = req.body;
-    const payload = JSON.stringify({ title, body, icon, badge });
-
+  if (req.method === "POST") {
     try {
-      const subscriptions = await redis.lrange('subscriptions', 0, -1);
+      const { title, body, icon } = req.body;
+      const payload = JSON.stringify({ title, body, icon });
 
+      // Redis から全サブスクリプションを取得
+      const subscriptions = await redis.lrange("subscriptions", 0, -1);
       if (subscriptions.length === 0) {
-        res.status(400).json({ error: 'No subscriptions available' });
-        return;
+        return res.status(400).json({ error: "No subscriptions available" });
       }
 
-      const sendNotifications = subscriptions.map((sub) => {
-        return webpush.sendNotification(sub, payload).catch((error) => {
-          console.error('Error sending notification to:', sub.endpoint, error);
-        });
+      // 送信
+      const results = subscriptions.map(async (sub) => {
+        const subscription = JSON.parse(sub);
+        try {
+          await webpush.sendNotification(subscription, payload);
+        } catch (err) {
+          console.error("送信失敗:", subscription.endpoint, err);
+        }
       });
 
-      await Promise.all(sendNotifications);
-      res.status(200).json({ message: 'Notifications sent successfully' });
+      await Promise.all(results);
+      return res.status(200).json({ message: "Notifications sent successfully" });
     } catch (error) {
-      console.error('Error sending notifications:', error);
-      res.status(500).json({ error: 'Error sending notifications' });
+      console.error(error);
+      return res.status(500).json({ error: "Error sending notifications" });
     }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
+
+  res.setHeader("Allow", ["POST"]);
+  res.status(405).end(`Method ${req.method} Not Allowed`);
 }
