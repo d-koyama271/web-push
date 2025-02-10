@@ -2,12 +2,41 @@
   <div class="container">
     <h1>Web Push Demo</h1>
     <button @click="subscribe">通知を購読</button>
-    <button @click="sendTestNotification">通知を表示</button>
+    <div>
+      <label for="title">タイトル:</label>
+      <input id="title" v-model="title" type="text" placeholder="通知タイトル" />
+    </div>
+
+    <!-- 本文入力 -->
+    <div>
+      <label for="body">本文:</label>
+      <input id="body" v-model="body" type="text" placeholder="通知本文" />
+    </div>
+
+    <!-- アイコン選択 (ドロップダウン) -->
+    <div>
+      <label for="icon">アイコン:</label>
+      <select id="icon" v-model="icon">
+        <option disabled value="">--- 選択してください ---</option>
+        <option value="icons/line-192.png">ライン</option>
+        <option value="icons/instagram-128">インスタ</option>
+        <option value="icons/tiktok-128.png">tiktok</option>
+        <!-- 必要に応じて追加 -->
+      </select>
+    </div>
+
+    <!-- 送信ボタン -->
+    <button @click="sendNotification">通知を送信</button>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRuntimeConfig } from '#app'
+
+const title = ref('')
+const body = ref('')
+const icon = ref('')
 
 const config = useRuntimeConfig()
 
@@ -41,18 +70,16 @@ const subscribe = async () => {
   }
 }
 
-const sendTestNotification = async () => {
+const sendNotification = async () => {
   try {
     await fetch(`${config.public.backendUrl}/sendNotification`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        title: 'テスト通知',
-        body: 'これはテスト通知です。',
-        icon: 'icons/icon-192x192.png',
-        badge: 'icons/icon-192x192.png',
+        title: title.value ?? 'テスト通知',
+        body: body.value ?? 'これはテスト通知です',
+        icon: icon.value ?? 'icons/web-128.png',
+        badge: 'icons/web-128.png',
       })
     })
 
@@ -82,13 +109,22 @@ function urlBase64ToUint8Array(base64String) {
 
 <style scoped>
 .container {
-  text-align: center;
-  margin-top: 50px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
 }
-
+label {
+  display: inline-block;
+  width: 60px;
+  margin-right: 8px;
+}
+input, select {
+  width: 80%;
+  margin-bottom: 1rem;
+}
 button {
-  margin: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
+  display: inline-block;
+  padding: 8px 16px;
+  cursor: pointer;
 }
 </style>
