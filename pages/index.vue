@@ -7,25 +7,21 @@
       <input id="title" v-model="title" type="text" placeholder="通知タイトル" />
     </div>
 
-    <!-- 本文入力 -->
     <div>
       <label for="body">本文:</label>
       <input id="body" v-model="body" type="text" placeholder="通知本文" />
     </div>
 
-    <!-- アイコン選択 (ドロップダウン) -->
     <div>
       <label for="icon">アイコン:</label>
       <select id="icon" v-model="icon">
         <option disabled value="">--- 選択してください ---</option>
         <option value="icons/line-192.png">ライン</option>
-        <option value="icons/instagram-128">インスタ</option>
+        <option value="icons/instagram-128.png">インスタ</option>
         <option value="icons/tiktok-128.png">tiktok</option>
-        <!-- 必要に応じて追加 -->
       </select>
     </div>
 
-    <!-- 送信ボタン -->
     <button @click="sendNotification">通知を送信</button>
   </div>
 </template>
@@ -76,10 +72,9 @@ const sendNotification = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        title: title.value ?? 'テスト通知',
-        body: body.value ?? 'これはテスト通知です',
-        icon: icon.value ?? 'icons/web-128.png',
-        badge: 'icons/web-128.png',
+        title: title.value,
+        body: body.value,
+        icon: icon.value,
       })
     })
 
