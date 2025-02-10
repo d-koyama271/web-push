@@ -38,11 +38,10 @@ export default async function handler(req, res) {
 
       // 送信
       const results = subscriptions.map(async (sub) => {
-        const subscription = JSON.parse(sub);
         try {
-          await webpush.sendNotification(subscription, payload);
+          await webpush.sendNotification(sub, payload);
         } catch (err) {
-          console.error("送信失敗:", subscription.endpoint, err);
+          console.error("送信失敗:", sub.endpoint, err);
         }
       });
 
