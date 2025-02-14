@@ -22,21 +22,16 @@ export default defineNuxtConfig({
     registerType: "autoUpdate",
     manifest: {
       name: "通知デモ",
-      short_name: "NotifDemo",
-      description: "Web通知のデモサイト",
+      short_name: "Notify",
+      description: "Web通知のデモサイトです。",
       lang: "ja",
       display: "standalone",
       background_color: "#ffffff",
       theme_color: "#4A90E2",
       icons: [
         {
-          src: "icons/icon-192x192.png",
-          sizes: "192x192",
-          type: "image/png",
-        },
-        {
-          src: "icons/icon-512x512.png",
-          sizes: "512x512",
+          src: "icons/web-128.png",
+          sizes: "128x128",
           type: "image/png",
         },
       ],
