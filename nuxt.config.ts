@@ -36,6 +36,9 @@ export default defineNuxtConfig({
         },
       ],
     },
+    workbox: {
+      navigateFallback: null
+    },
     strategies: 'injectManifest',
     srcDir: 'plugins/pwa/'
   },
