@@ -13,6 +13,9 @@ export default defineNuxtConfig({
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
       ],
+      link: [
+        { rel: "apple-touch-icon", href: "icons/web-512.png" },
+      ],
     },
   },
 
@@ -45,8 +48,10 @@ export default defineNuxtConfig({
     workbox: {
       navigateFallback: null,
     },
-    // strategies: 'injectManifest',
-    // srcDir: 'plugins/pwa/'
+    // service workerの設定
+    strategies: "injectManifest",
+    srcDir: "plugins/pwa/",
+    filename: "sw.js",
   },
 
   runtimeConfig: {
