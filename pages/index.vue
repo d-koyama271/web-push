@@ -46,10 +46,10 @@ const icon = ref('')
 const config = useRuntimeConfig()
 
 const subscribe = async () => {
-  // if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-  //   alert('このブラウザはPush通知に対応していません。')
-  //   return
-  // }
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    alert('このブラウザはPush通知に対応していません。')
+    return
+  }
 
   try {
     const registration = await navigator.serviceWorker.ready
