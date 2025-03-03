@@ -96,7 +96,7 @@ const unsubscribe = async () => {
     await fetch(`${config.public.backendUrl}/unsubscribe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ endpoint: subscription.endpoint })
+      body: JSON.stringify(subscription)
     })
 
     // ブラウザ側で購読を解除
