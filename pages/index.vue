@@ -93,6 +93,8 @@ const unsubscribe = async () => {
       return
     }
 
+    console.log(subscription)
+
     await fetch(`${config.public.backendUrl}/unsubscribe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
