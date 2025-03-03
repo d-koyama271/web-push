@@ -3,8 +3,8 @@
     <h1>Web Push Demo</h1>
 
     <div class="subscribe-group">
-      <button @click="subscribe">通知を購読</button>
-      <button @click="unsubscribe">購読解除</button>
+      <button :disabled="isSubscribing" @click="subscribe">通知を購読</button>
+      <button @click="unsubscribe">購読を解除</button>
     </div>
 
     <div class="form-group">
@@ -45,6 +45,7 @@ const config = useRuntimeConfig()
 const title = ref('')
 const body = ref('')
 const icon = ref('')
+const isSubscribing = ref(false)
 
 // 購読
 const subscribe = async () => {
@@ -52,6 +53,10 @@ const subscribe = async () => {
     alert('このブラウザはPush通知に対応していません。')
     return
   }
+
+  if (isSubscribing.value) return
+  // ボタン無効化
+  isSubscribing.value = true
 
   try {
     const registration = await navigator.serviceWorker.ready
@@ -76,6 +81,9 @@ const subscribe = async () => {
   } catch (error) {
     console.error('Subscription failed:', error)
     alert('通知の購読に失敗しました。')
+  } finally {
+    // 処理が終わったらボタンを再度有効化
+    isSubscribing.value = false
   }
 }
 
@@ -92,8 +100,6 @@ const unsubscribe = async () => {
       alert('購読されていません。')
       return
     }
-
-    console.log(JSON.stringify(subscription))
 
     await fetch(`${config.public.backendUrl}/unsubscribe`, {
       method: 'POST',
