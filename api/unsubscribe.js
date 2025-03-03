@@ -17,15 +17,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const subscription = JSON.parse(req.body)
-
     // Redisに保存されている文字列を検索・削除
     // 購読時に "await redis.lpush('subscriptions', JSON.stringify(subscription))"
     // と同じ形で保存している前提で lrem する
     const removedCount = await redis.lrem(
       'subscriptions',
       0,
-      JSON.stringify(subscription)
+      req.body
     )
 
     if (removedCount === 0) {

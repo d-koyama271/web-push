@@ -4,7 +4,7 @@
 
     <div class="subscribe-group">
       <button @click="subscribe">通知を購読</button>
-      <button @click="unsubscribe" class="unsubscribe-btn">購読解除</button>
+      <button @click="unsubscribe">購読解除</button>
     </div>
 
     <div class="form-group">
@@ -194,9 +194,5 @@ button {
   padding: 8px 16px;
   cursor: pointer;
   margin: 0 8px; /* ボタン間に余白 */
-}
-.unsubscribe-btn {
-  background-color: #999;
-  color: white;
 }
 </style>
