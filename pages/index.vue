@@ -49,7 +49,7 @@ const isSubscribing = ref(false)
 
 // 購読
 const subscribe = async () => {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
     alert('このブラウザはPush通知に対応していません。')
     return
   }
@@ -59,6 +59,12 @@ const subscribe = async () => {
   isSubscribing.value = true
 
   try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      alert('通知許可が得られませんでした。')
+      return;
+    }
+
     const registration = await navigator.serviceWorker.ready
     const existing = await registration.pushManager.getSubscription()
     if (existing) {
@@ -71,11 +77,15 @@ const subscribe = async () => {
       applicationServerKey: urlBase64ToUint8Array(config.public.vapidPublicKey)
     })
 
-    await fetch(`${config.public.backendUrl}/subscribe`, {
+    const res = await fetch(`${config.public.backendUrl}/subscribe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(subscription)
     })
+
+    if (!res.ok) {
+      throw new Error(`SUBSCRIBE_API_${res.status}`)
+    }
 
     alert('通知を購読しました。')
   } catch (error) {
