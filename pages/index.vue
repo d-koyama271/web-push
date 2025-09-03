@@ -96,7 +96,7 @@ const subscribe = async () => {
       msg = '通知がOSまたはブラウザでブロックされています。';
     }
 
-    alert(msg)
+    alert(msg + (e?.message ? '\n' + e.message : ''))
   } finally {
     // 処理が終わったらボタンを再度有効化
     isSubscribing.value = false
