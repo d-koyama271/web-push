@@ -88,9 +88,15 @@ const subscribe = async () => {
     }
 
     alert('通知を購読しました。')
-  } catch (error) {
-    console.error('Subscription failed:', error)
-    alert('通知の購読に失敗しました。')
+  } catch (e) {
+    console.error('Subscription failed:', e)
+    msg = '通知の購読に失敗しました。'
+
+    if (e?.name === 'NotAllowedError') {
+      msg = '通知がOSまたはブラウザでブロックされています。';
+    }
+
+    alert(msg)
   } finally {
     // 処理が終わったらボタンを再度有効化
     isSubscribing.value = false
